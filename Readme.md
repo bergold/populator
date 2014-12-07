@@ -28,4 +28,4 @@ And last but not least, my favorite: Click the play button and animate through y
 - [Chart.js](http://www.chartjs.org/)
 - [Worldmap.svg](http://www.endlessicons.com/free-icons/world-map-icon/)
 - Earth surface data from [Wikipedia Earth](http://en.wikipedia.org/wiki/Earth)
-- [Full list of dependencies]](/Web/bower.json)
+- [Full list of dependencies](/Web/bower.json)
