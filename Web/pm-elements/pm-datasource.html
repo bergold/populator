@@ -1,0 +1,52 @@
+<link rel="import" href="../components/core-ajax/core-ajax.html">
+
+<polymer-element name="pm-datasource" attributes="loading url datemin datemax years population">
+  <template>
+    <style>
+      :host {
+        display: none;
+      }
+    </style>
+    
+    <core-ajax id="xhr" handleAs="json" url="{{url}}" loading="{{loading}}"></core-ajax>
+    
+  </template>
+  <script>
+    Polymer({
+      data: null,
+      loading: true,
+      observe: {
+        'datemin datemax': 'updateParams'
+      },
+      ready: function() {
+        this.$.xhr.addEventListener('core-complete', function(e) {
+          if (e.detail.response != 200) return;
+          this.parseData();
+        }.bind(this));
+      },
+      parseData: function() {
+        var res = this.$.xhr.response;
+        if (!res || !res[1]) return;
+        var d = res[1].reverse();
+        var years = []
+          , population = [];
+        d.forEach(function(x) {
+          if (x.value === null) return;
+          years.push(x.date);
+          population.push(x.value);
+        });
+        this.years = years;
+        this.population = population;
+      },
+      updateParams: function() {
+        this.loading = true;
+        this.job('updateParams', function() {
+          this.$.xhr.params = JSON.stringify({
+            date: this.datemin + ':' + this.datemax
+          });
+          this.$.xhr.go();
+        }, 1000);
+      }
+    });
+  </script>
+</polymer-element>

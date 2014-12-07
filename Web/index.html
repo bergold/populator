@@ -1,0 +1,26 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Populator</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+    
+    <script src="components/webcomponentsjs/webcomponents.min.js"></script>
+    
+    <link rel="import" href="theme.html">
+    
+    <link rel="import" href="components/font-roboto/roboto.html">
+    <link rel="import" href="components/polymer/polymer.html">
+    
+    <link rel="import" href="pm-elements/pm-datasource.html">
+    <link rel="import" href="pm-elements/pm-app.html">
+  </head>
+  <body fullbleed unresolved>
+    
+    <template is="auto-binding">
+      <pm-datasource url="/data.php" datemin="{{datemin}}" datemax="{{datemax}}" years="{{years}}" population="{{population}}" loading="{{loading}}"></pm-datasource>
+      <pm-app fit years="{{years}}" datemin="{{datemin}}" datemax="{{datemax}}" population="{{population}}" loading="{{loading}}" touch-action="auto"></pm-app>
+    </template>
+    
+  </body>
+</html>
