@@ -1,6 +1,8 @@
 /*
 !/Web
 !/Images
+!/Tools
 !.gitignore
+!Makefile
 !Readme.md
 /Web/components
