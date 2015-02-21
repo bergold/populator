@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-cd build/web
+cd Web
 git init
 git config user.name "Drone.io"
 git config user.email "emil.bergold@outlook.com"
