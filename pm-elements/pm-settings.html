@@ -1,0 +1,164 @@
+<link rel="import" href="../components/paper-shadow/paper-shadow.html">
+<link rel="import" href="../components/paper-slider/paper-slider.html">
+<link rel="import" href="../components/paper-input/paper-input.html">
+<link rel="import" href="../components/paper-button/paper-button.html">
+<link rel="import" href="../components/paper-spinner/paper-spinner.html">
+<link rel="import" href="../components/paper-fab/paper-fab.html">
+
+<polymer-element name="pm-settings" attributes="loading years area datemin datemax population areaperhuman selected">
+  <template>
+    <style>
+      :host {
+        /*width: 256px;
+        height: 128px;*/
+      }
+      .card {
+        background: #ffffff;
+        border-radius: 2px;
+        padding: 24px 24px 32px;
+      }
+      .reset-padding {
+        margin: 0 -16px;
+      }
+      .offset-up {
+        margin-top: -8px;
+      }
+      .actions {
+        margin-top: 24px;
+        margin-bottom: -8px;
+      }
+      
+      .caption {
+        margin-top: 8px;
+        font-weight: 400;
+        font-size: 12px;
+        color: rgba(0,0,0,0.54);
+      }
+      .display-1 {
+        font-weight: 400;
+        font-size: 34px;
+        color: rgba(0,0,0,0.54);
+      }
+      .display-2 {
+        font-weight: 400;
+        font-size: 45px;
+        color: rgba(0,0,0,0.54);
+      }
+      paper-button {
+        font-weight: 500;
+        font-size: 14px;
+      }
+      
+      .txt-year {
+        width: 40px;
+      }
+      .txt-year::shadow input {
+        text-align: center;
+      }
+      .txt-num {
+        width: 112px;
+        margin-right: 8px;
+      }
+      .txt-num::shadow paper-input-decorator {
+        padding-top: 0;
+        padding-bottom: 0;
+      }
+      .txt-num::shadow input {
+        margin: 0;
+        text-align: right;
+      }
+      
+      paper-fab {
+        position: absolute;
+        bottom: -28px;
+        right: 24px;
+      }
+      
+      .spinner-container {
+        margin: 24px auto 0;
+        width: 32px;
+        height: 32px;
+        background: #ffffff;
+        border-radius: 50%;
+      }
+      .spinner-container paper-spinner {
+        margin: 4px;
+        width: 24px;
+        height: 24px;
+        transform: scale(0.8);
+      }
+    </style>
+    
+    <paper-shadow z="1" class="card" relative vertical layout>
+      <span class="caption">Population</span>
+      <span class="display-2">{{population[selected] | prettyNum }}</span>
+      
+      <span class="caption">Year</span>
+      <span class="display-2">{{years[selected]}}</span>
+      
+      <section class="reset-padding" horizontal layout>
+        <paper-slider id="rngYear" flex max="{{years.length-1}}" immediateValue="{{selected}}"></paper-slider>
+      </section>
+      
+      <div class="offset-up" horizontal layout>
+        <paper-input class="txt-year" value="{{datemin}}" disabled></paper-input>
+        <div flex></div>
+        <paper-input class="txt-year" value="{{datemax}}" disabled></paper-input>
+      </div>
+      
+      <span class="caption">Earth's Land Area</span>
+      <span class="display-1">{{area | prettyNum}} km&#x00B2;</span>
+      
+      <span class="caption">Area per Human</span>
+      <div class="display-1" horizontal layout>
+        <paper-input class="txt-num" flex value="{{areaperhuman}}"></paper-input>
+        <span>km&#x00B2;</span>
+      </div>
+      
+      <!--<div class="actions" end-justified horizontal layout>
+        <paper-button>Fade</paper-button>
+      </div>-->
+      
+      <paper-fab src="../assets/icon.play.svg" on-click="{{timetrip}}"></paper-fab>
+      
+      <div class="overlay" fit hidden?="{{!loading}}">
+        <paper-shadow class="spinner-container" z="1">
+          <paper-spinner active></paper-spinner>
+        </paper-shadow>
+      </div>
+    </paper-shadow>
+    
+  </template>
+  <script>
+    Polymer({
+      areaperhuman: 0.015,
+      selectYear: function(i) {
+        this.$.rngYear.value = i;
+      },
+      
+      prettyNum: function(num) {
+        if (!/^\d*$/g.test(num)) return '';
+        var s = num + '';
+        var out = '';
+        while (s != '') {
+          out = ' ' + s.slice(-3) + out;
+          s = s.slice(0, -3);
+        }
+        return out;
+      },
+      
+      timetrip: function() {
+        this.selected = 0;
+        var step = function(init) {
+          this.job('timestep', function() {
+            if (this.selected < this.years.length - 1) {
+              this.selected++;
+              step(false);
+            }
+          }, init ? 1000 : 250);
+        }.bind(this);
+        step(true);
+      }
+    });
+  </script>
+</polymer-element>

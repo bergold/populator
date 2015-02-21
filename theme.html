@@ -1,0 +1,56 @@
+<!--
+@primary-color: blue
+  - 500 #2196F3
+  - 700 #1976D2
+  - 900 #0D47A1
+
+-->
+
+<style shim-shadowdom>
+
+  html, body {
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    cursor: default;
+  }
+  
+  body {
+    font-family: 'RobotoDraft', sans-serif;
+    margin: 0;
+    background: #1a1a1a;
+    font-weight: 400;
+    font-size: 13px;
+    color: rgba(0,0,0,0.87);
+  }
+  
+  html /deep/ paper-slider::shadow #sliderBar::shadow #activeProgress,
+  html /deep/ paper-slider::shadow #sliderKnobInner {
+    background-color: #2196F3;
+  }
+  
+</style>
+
+<script>
+  window.addEventListener('polymer-ready', function(e) {
+    requestAnimationFrame(function() {
+      
+      var history = document.querySelector("pm-app::shadow pm-history");
+      var world = document.querySelector('pm-app::shadow pm-world');
+      
+      history.background = '#1a1a1a';
+      history.shadow = '#1a1c1e'; // mix(#1976D2, #1a1a1a, 2%)
+      history.color = '#0D47A1';
+      history.highlight = 'rgba(13, 71, 161, 0.2)'; // fade(#0D47A1, 20%)
+      
+      world.color = '#1976D2';
+      
+      CoreStyle.g.paperInput.focusedColor =
+      CoreStyle.g.paperInput.cursorColor =
+        '#2196F3';
+      
+    });
+  });
+</script>

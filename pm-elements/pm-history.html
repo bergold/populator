@@ -1,0 +1,92 @@
+<script src="../components/chartjs/Chart.min.js"></script>
+
+<polymer-element name="pm-history" attributes="years population selected background shadow color">
+  <template>
+    <style>
+      #container {
+        overflow: hidden;
+      }
+    </style>
+    
+    <div fit id="container"></div>
+    
+  </template>
+  <script>
+    Polymer({
+      years: [],
+      population: [],
+      selected: 0,
+      
+      background: '#000',
+      shadow: '#333',
+      color: '#fff',
+      highlight: 'rgba(255, 255, 255, 0.5)',
+      
+      observe: {
+        'years population selected background shadow color': 'render'
+      },
+      
+      attached: function() {
+        if (!this.$.canvas) {
+          var canvas = document.createElement('canvas');
+          canvas.id = 'canvas';
+          this.$.container.appendChild(canvas);
+          this.$.canvas = canvas;
+        }
+      },
+      
+      render: function() {
+        var ctx = this.$.canvas.getContext("2d");
+        
+        var data = {
+            labels: this.years,
+            datasets: [
+                {
+                    label: "Population",
+                    fillColor: this.shadow,
+                    strokeColor: this.color,
+                    pointColor: this.color,
+                    pointStrokeColor: this.background,
+                    pointHighlightStroke: this.highlight,
+                    data: this.population,
+                    selected: this.selected
+                }
+            ]
+        };
+        var options = {
+            animation: false,
+            showScale: false,
+            showTooltips: false,
+            responsive: true,
+            maintainAspectRatio: false,
+            pointDotRadius: 4,
+            pointDotStrokeWidth: 4,
+            datasetStrokeWidth: 4
+        };
+        
+        this.$.chart = new Chart(ctx).SelectedLine(data, options);
+      }
+    });
+  </script>
+</polymer-element>
+
+<script>
+  //toDataURL
+  Chart.types.Line.extend({
+    name: 'SelectedLine',
+    initialize: function(data) {
+        Chart.types.Line.prototype.initialize.apply(this, arguments);
+        data.datasets.forEach(function(v, i) {
+          var d = this.datasets[i];
+          var s = v.selected;
+          
+          var p = d.points[s];
+          if (!p) return;
+          p.fillColor = p.highlightFill;
+					p.strokeColor = p.highlightStroke;
+          
+        }.bind(this));
+        this.render();
+    }
+  });
+</script>

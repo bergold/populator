@@ -1,0 +1,131 @@
+<script src="../components/svg.js/dist/svg.min.js"></script>
+<script src="../components/svg.parser.js/svg.parser.min.js"></script>
+<script src="../components/svg.import.js/svg.import.min.js"></script>
+
+<link rel="import" href="../components/core-ajax/core-xhr.html">
+
+<polymer-element name="pm-world" attributes="population color">
+  <template>
+    <style>
+      #drawing {
+        margin: 64px 24px;
+        overflow: hidden;
+      }
+    </style>
+    
+    <div fit id="drawing"></div>
+    
+  </template>
+  <script>
+    (function() {
+      var _rawWorld = null;
+      var getWorld = function(cb) {
+        if (_rawWorld !== null) return _rawWorld;
+        var xhr = document.createElement('core-xhr');
+        xhr.request({
+          url: 'assets/world.svg',
+          callback: function(res, xhrr) {
+            if (xhrr.status != 200) {
+              // [todo] handle error
+              return cb(false);
+            }
+            return cb(_rawWorld = res);
+          }
+        });
+      }
+      
+      Polymer({
+        color: '#fff',
+        population: 0,
+        
+        colorChanged: function() {
+          getWorld(this.render.bind(this));
+        },
+        
+        populationChanged: function(old, population) {
+          this.populate(population);
+        },
+        
+        populate: function(population) {
+          if (population < 0) return console.warn("[pm-world] Invalid population", population);
+          if (!this.$.draw) return;
+          var draw = this.$.draw.main;
+          var rect1 = this.$.draw.rect1;
+          var rect2 = this.$.draw.rect2;
+          var text = this.$.draw.text;
+          var tg = this.$.draw.tg;
+          var pop = population > 1 ? 1 : population;
+          
+          var vbox = draw.viewbox();
+          var height = (1 - pop) * vbox.height;
+          rect1.animate(1000, '>').attr({ height: height });
+          rect2.animate(1000, '>').y(vbox.y + height).attr({ height: vbox.height - height });
+          
+          text.text(population.toFixed(2));
+          tg.cx(vbox.width / 2 + vbox.x)
+          
+          if (population > 1) {
+            draw.animate(250, '>').viewbox(0, 110, 500, 390);
+            tg.animate(250, '>').opacity(1);
+          } else {
+            draw.animate(300, '>').viewbox(0, 110, 500, 280);
+            tg.animate(250, '>').opacity(0);
+          }
+        },
+        
+        render: function(rawSvg) {
+          var color = this.color;
+          var draw = SVG(this.$.drawing).clear()
+              .attr('preserveAspectRatio', 'xMidYMid meet')
+              .viewbox(0, 110, 500, 280);
+          
+          var img = draw.defs().svg(rawSvg).roots()[0];
+          img.first().each(function() { this.attr('fill', null); });
+          img.size(500, 500);
+          
+          var black = draw.defs().pattern(500, 500, function(add) {
+              add.use(img).fill('rgba(0,0,0,0)').stroke({ width: 1, color: color });
+          });
+          var blue = draw.defs().pattern(500, 500, function(add) {
+              add.use(img).fill(color);
+          });
+          var model = draw.defs().rect(500, 500);
+          
+          var g = draw.group();
+          
+          var poly1 = g.use(model).fill(black);
+          var poly2 = g.use(model).fill(blue);
+          
+          var vbox = draw.viewbox();
+          var rect1 = g.rect(vbox.width, vbox.height).move(vbox.x, vbox.y);
+          var rect2 = g.rect(vbox.width, 0).move(vbox.x, vbox.y + vbox.height);
+          
+          poly1.clipWith(rect1);
+          poly2.clipWith(rect2);
+          
+          var tg = draw.group();
+          tg.path('M 0 0 l 16 16 M 0 16 l 16 -16').x(32).cy(55).stroke({ width: 3, color: color, linecap: 'round' });
+          var text = tg.text('1').font({
+            family: '\'RobotoDraft\', sans-serif',
+            size: 62,
+            weight: 300
+          }).fill(color).x(80).cy(55);
+          
+          tg.cx(vbox.width / 2 + vbox.x).y(390);
+          tg.opacity(0);
+          
+          this.$.draw = {
+            main: draw,
+            rect1: rect1, 
+            rect2: rect2,
+            text: text,
+            tg: tg
+          };
+          
+          this.populate(this.population);
+        }
+        
+      });
+    })();
+  </script>
+</polymer-element>

@@ -1,0 +1,49 @@
+<link rel="import" href="pm-history.html">
+<link rel="import" href="pm-world.html">
+<link rel="import" href="pm-settings.html">
+
+<polymer-element name="pm-app" attributes="loading years datemin datemax population">
+  <template>
+    <style>
+      :host {
+        overflow: hidden;
+      }
+      pm-settings {
+        position: absolute;
+        top: 24px;
+        right: 24px;
+      }
+    </style>
+    
+    <pm-history fit years="{{years}}" population="{{population}}" selected="{{selected}}"></pm-history>
+    <pm-world id="world" fit population="0"></pm-world>
+    <pm-settings id="settings" loading="{{loading}}" years="{{years}}" area="{{area}}"
+                 datemin="{{datemin}}" datemax="{{datemax}}"
+                 population="{{population}}" areaperhuman="{{areaperhuman}}" selected="{{selected}}"></pm-settings>
+    
+  </template>
+  <script>
+    Polymer({
+      selected: 0,
+      area: 148940000,
+      datemin: '1989',
+      datemax: '2013',
+      observe: {
+        'population selected areaperhuman': 'procentPop'
+      },
+      yearsChanged: function(oldYears, newYears) {
+        var y = oldYears ? oldYears[this.selected] : undefined;
+        var i = newYears.indexOf(y);
+        var a = newYears.indexOf(new Date().getFullYear() - 1);
+        this.$.settings.selectYear(i > -1 ? i : a > -1 ? a : newYears.length - 1);
+      },
+      procentPop: function() {
+        var pop = this.population[this.selected]
+          , fac = this.areaperhuman
+          , tot = this.area;
+        var val = pop * fac / tot;
+        this.$.world.population = isNaN(val) ? 0 : val;
+      }
+    });
+  </script>
+</polymer-element>
