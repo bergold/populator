@@ -23,7 +23,7 @@
         if (_rawWorld !== null) return _rawWorld;
         var xhr = document.createElement('core-xhr');
         xhr.request({
-          url: '/assets/world.svg',
+          url: 'assets/world.svg',
           callback: function(res, xhrr) {
             if (xhrr.status != 200) {
               // [todo] handle error
